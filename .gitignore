@@ -1,0 +1,11 @@
+## Archivos y carpetas generados por compilación
+**/bin/
+**/obj/
+
+## Configuración local y caché de Visual Studio
+.vs/
+*.user
+*.suo
+
+## Secretos locales
+secrets.json
