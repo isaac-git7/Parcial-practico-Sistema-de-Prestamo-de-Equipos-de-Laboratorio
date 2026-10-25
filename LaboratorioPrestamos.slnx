@@ -1,1 +1,10 @@
-<Solution />
+<Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="LaboratorioAPI/LaboratorioAPI.csproj" />
+  <Project Path="LaboratorioMVC/LaboratorioMVC.csproj" />
+</Solution>
