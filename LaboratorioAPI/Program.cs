@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using LaboratorioAPI.Data;
+using LaboratorioAPI.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
