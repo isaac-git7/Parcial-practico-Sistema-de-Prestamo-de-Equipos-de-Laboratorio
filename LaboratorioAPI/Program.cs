@@ -13,6 +13,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Registrar AutoMapper y su perfil de mapeo
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
+
 var app = builder.Build();
 
 // Configuración de la canalización de solicitudes HTTP
@@ -28,5 +34,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();
