@@ -1,0 +1,283 @@
+{
+  "info": {
+    "_postman_id": "4f4030f6-d1cb-4a92-a853-326074c306b7",
+    "name": "LaboratorioAPI - Fase4",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59258927",
+    "_collection_link": "https://go.postman.co/collection/59258927-4f4030f6-d1cb-4a92-a853-326074c306b7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Caso 4: Filtros Combinados de Equipos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Respuesta exitosa 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/Equipos?buscar=LAP&categoriaId=1&estado=Disponible",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Equipos"
+          ],
+          "query": [
+            {
+              "key": "buscar",
+              "value": "LAP"
+            },
+            {
+              "key": "categoriaId",
+              "value": "1"
+            },
+            {
+              "key": "estado",
+              "value": "Disponible"
+            }
+          ]
+        },
+        "description": "StartFragment\n\n- **Método y URL:** `GET {{baseUrl}}/api/Equipos?buscar=Dell&categoriaId=1&estado=Disponible`\n    \n- **Descripción:** \"Consulta de equipos combinando búsqueda por texto, ID de categoría y estado operativo.\"\n    \n- **Tests:** `pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));`\n    \n\nEndFragment"
+      },
+      "response": []
+    },
+    {
+      "name": "Caso 6 - Error Fecha Pasada",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Rechazado correctamente con 400 Bad Request\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"equipoId\": 1,\r\n  \"usuarioId\": 1,\r\n  \"fechaVencimiento\": \"2020-01-01T00:00:00\",\r\n  \"observaciones\": \"Prueba de rechazo por fecha pasada\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Prestamos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Prestamos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Caso 7 - Error Mas de 7 Dias",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Rechazado correctamente con 400 Bad Request\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"equipoId\": 1,\r\n  \"usuarioId\": 1,\r\n  \"fechaVencimiento\": \"2026-11-20T12:00:00\",\r\n  \"observaciones\": \"Prueba de rechazo por superar 7 dias\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Prestamos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Prestamos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Auxiliar - Prestamo Exitoso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Prestamo registrado con 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"equipoId\": 1,\r\n  \"usuarioId\": 1,\r\n  \"fechaVencimiento\": \"2026-10-30T18:00:00\",\r\n  \"observaciones\": \"Prestamo inicial valido para pruebas\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Prestamos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Prestamos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Caso 8 - Error Equipo Ocupado 409",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Detecta conflicto y devuelve 409 Conflict\", function () {\r\n    pm.response.to.have.status(409);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"equipoId\": 1,\r\n  \"usuarioId\": 1,\r\n  \"fechaVencimiento\": \"2026-10-30T18:00:00\",\r\n  \"observaciones\": \"Intento de pedir un equipo que no esta Disponible\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Prestamos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Prestamos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Caso 9: Devolución Exitosa de Equipo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Devuelto exitosamente con 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/Prestamos/1/devolver",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Prestamos",
+            "1",
+            "devolver"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Caso 12: Conflicto de Concurrencia Optimista (RowVersion)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Detecta version desfasada con 409 Conflict\", function () {\r\n    pm.response.to.have.status(409);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"id\": 1,\r\n  \"nombre\": \"Laptop Dell Modificada Concurrente\",\r\n  \"marca\": \"Dell\",\r\n  \"modelo\": \"Latitude\",\r\n  \"serie\": \"SN-009988\",\r\n  \"categoriaId\": 1,\r\n  \"estado\": \"Disponible\",\r\n  \"rowVersion\": \"QUFBQUFBQUFBQUE9\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Equipos/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "Equipos",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}
