@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Obtener la URL base de la API
-string apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7123/";
+string apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7126/";
 
 // Registro de los servicios HTTP tipados
 builder.Services.AddHttpClient<ICategoriaService, CategoriaService>(client =>
