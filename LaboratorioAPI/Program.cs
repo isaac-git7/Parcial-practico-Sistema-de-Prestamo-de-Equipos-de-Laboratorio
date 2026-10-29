@@ -1,3 +1,4 @@
+using Microsoft.OpenApi;
 using System.Text;
 using LaboratorioAPI.Data;
 using LaboratorioAPI.Mappings;
@@ -15,7 +16,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 2. Controladores y Swagger (OpenAPI)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Pegue aquí el token JWT obtenido en /api/auth/login"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+    });
+});
 
 // 3. AutoMapper
 builder.Services.AddAutoMapper(cfg =>
