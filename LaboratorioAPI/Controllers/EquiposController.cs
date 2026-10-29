@@ -1,14 +1,16 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 using LaboratorioAPI.Data;
 using LaboratorioAPI.DTOs.Equipos;
 using LaboratorioAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LaboratorioAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EquiposController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -82,6 +84,7 @@ namespace LaboratorioAPI.Controllers
         // POST: api/equipos
         // Registra un nuevo equipo físico en el inventario
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<EquipoDetalleDto>> CrearEquipo([FromBody] EquipoCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -124,6 +127,7 @@ namespace LaboratorioAPI.Controllers
         // PUT: api/equipos/5
         // Actualiza los datos de un equipo controlando concurrencia con RowVersion
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ActualizarEquipo(int id, [FromBody] EquipoUpdateDto dto)
         {
             if (id != dto.Id)
@@ -187,6 +191,7 @@ namespace LaboratorioAPI.Controllers
         // DELETE: api/equipos/5
         // Da de baja un equipo verificando que no tenga historial de préstamos
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EliminarEquipo(int id)
         {
             var equipo = await _context.Equipos.FindAsync(id);

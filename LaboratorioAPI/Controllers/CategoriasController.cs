@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LaboratorioAPI.Data;
@@ -9,6 +10,7 @@ namespace LaboratorioAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CategoriasController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -52,6 +54,7 @@ namespace LaboratorioAPI.Controllers
         // POST: api/categorias
         // Registra una nueva categoria a partir de los datos enviados en el formulario
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CategoriaDto>> CrearCategoria([FromBody] CategoriaCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -85,6 +88,7 @@ namespace LaboratorioAPI.Controllers
         // PUT: api/categorias/5
         // Modifica el nombre o descripcion de una categoria existente
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ActualizarCategoria(int id, [FromBody] CategoriaCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -119,6 +123,7 @@ namespace LaboratorioAPI.Controllers
         // DELETE: api/categorias/5
         // Elimina la categoria unicamente si no tiene ningun equipo asignado
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EliminarCategoria(int id)
         {
             var categoria = await _context.Categorias.FindAsync(id);
