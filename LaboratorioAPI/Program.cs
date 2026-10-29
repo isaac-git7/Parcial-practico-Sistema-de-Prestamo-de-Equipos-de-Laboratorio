@@ -1,6 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+using System.Text;
 using LaboratorioAPI.Data;
 using LaboratorioAPI.Mappings;
+using LaboratorioAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,15 +17,47 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Registrar AutoMapper y su perfil de mapeo
+// 3. AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
 
+// 4. Seguridad: servicio de tokens y autenticación JWT
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Key no está configurada o tiene menos de 32 caracteres. Defínala en User Secrets.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-// Configuración de la canalización de solicitudes HTTP
+// 5. Seeder: crea el Admin inicial si no hay usuarios
+await DbSeeder.SembrarAdminAsync(app.Services, app.Configuration);
+
+// Canalización de solicitudes HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -29,11 +65,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// En la Fase 2 la Persona B agregará aquí app.UseAuthentication()
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 
 app.Run();
