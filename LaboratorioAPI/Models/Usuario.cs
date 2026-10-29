@@ -12,13 +12,18 @@ namespace LaboratorioAPI.Models
         public string Username { get; set; } = string.Empty; // Carnet o identificador único
 
         [Required]
+        [StringLength(100)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty; // Email del usuario
+
+        [Required]
         public string PasswordHash { get; set; } = string.Empty; // Contraseña cifrada
 
         [Required]
         [StringLength(100)]
         public string NombreCompleto { get; set; } = string.Empty;
 
-        // Rol: "Administrador", "Docente", "Estudiante"
+        // Rol: "Admin", "Docente", "Estudiante"
         [Required]
         [StringLength(20)]
         public string Rol { get; set; } = "Estudiante";

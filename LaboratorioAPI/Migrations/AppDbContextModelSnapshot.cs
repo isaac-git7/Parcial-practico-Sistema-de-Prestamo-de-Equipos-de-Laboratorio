@@ -176,6 +176,11 @@ namespace LaboratorioAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("NombreCompleto")
                         .IsRequired()
                         .HasMaxLength(100)
