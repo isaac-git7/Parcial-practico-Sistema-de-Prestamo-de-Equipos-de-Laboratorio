@@ -22,6 +22,11 @@ namespace LaboratorioMVC.Controllers
             const int tamanioPagina = 10;
             if (pagina < 1) pagina = 1;
 
+            if (HttpContext.Session.GetString("Rol") == "Estudiante")
+            {
+                estado = "Disponible";
+            }
+
             // Obtener los registros filtrados desde la API
             var todosLosEquipos = (await _equipoService.GetAllAsync(buscar, categoriaId, estado)).ToList();
             var categorias = await _categoriaService.GetAllAsync();

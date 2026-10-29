@@ -14,11 +14,16 @@ namespace LaboratorioMVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(bool expirada = false)
         {
             if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Token")))
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (expirada)
+            {
+                ViewBag.Mensaje = "Su sesión expiró. Inicie sesión nuevamente.";
             }
             return View(new LoginViewModel());
         }

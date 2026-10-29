@@ -7,9 +7,9 @@
     <div class="col-md-5">
         <h2 class="mb-4 text-center">Iniciar sesión</h2>
 
-        @if (TempData["Mensaje"] != null)
+        @if (ViewBag.Mensaje != null)
         {
-            <div class="alert alert-warning">@TempData["Mensaje"]</div>
+            <div class="alert alert-warning">@ViewBag.Mensaje</div>
         }
 
         <form asp-action="Login" method="post">
