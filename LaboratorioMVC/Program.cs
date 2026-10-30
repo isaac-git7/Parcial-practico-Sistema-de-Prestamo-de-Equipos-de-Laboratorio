@@ -53,6 +53,13 @@ builder.Services.AddHttpClient<IReporteService, ReporteService>(client =>
 .AddHttpMessageHandler<AuthTokenHandler>()
 .AddHttpMessageHandler<ApiErrorHandler>();
 
+builder.Services.AddHttpClient<IPrestamoService, PrestamoService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<AuthTokenHandler>()
+.AddHttpMessageHandler<ApiErrorHandler>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

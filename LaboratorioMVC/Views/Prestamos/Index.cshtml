@@ -1,0 +1,95 @@
+﻿@model IEnumerable<LaboratorioMVC.Models.PrestamoListViewModel>
+
+@{
+    var rol = Context.Session.GetString("Rol");
+    var esEstudiante = rol == "Estudiante";
+    var puedeGestionar = rol == "Admin" || rol == "Docente";
+    bool soloVencidos = (bool)(ViewBag.SoloVencidos ?? false);
+    ViewData["Title"] = esEstudiante ? "Mis préstamos" : "Préstamos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@(esEstudiante ? "Mis préstamos" : "Préstamos de equipos")</h2>
+    @if (puedeGestionar)
+    {
+        <a asp-action="Create" class="btn btn-success">+ Nuevo préstamo</a>
+    }
+</div>
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm @(soloVencidos ? "btn-outline-dark" : "btn-dark")">Todos</a>
+    <a asp-action="Index" asp-route-soloVencidos="true" class="btn btn-sm @(soloVencidos ? "btn-danger" : "btn-outline-danger")">Solo vencidos</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Equipo</th>
+                @if (!esEstudiante)
+                {
+                    <th>Usuario</th>
+                }
+                <th>Préstamo</th>
+                <th>Vence</th>
+                <th>Devolución</th>
+                <th>Estado</th>
+                @if (puedeGestionar)
+                {
+                    <th class="text-center">Acciones</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    <tr>
+                        <td><strong>@p.EquipoCodigo</strong><br /><small class="text-muted">@p.EquipoNombre</small></td>
+                        @if (!esEstudiante)
+                        {
+                            <td>@p.UsuarioNombre</td>
+                        }
+                        <td>@p.FechaPrestamo.ToString("dd/MM/yyyy")</td>
+                        <td>@p.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                        <td>@(p.FechaDevolucion?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>
+                            @if (p.FechaDevolucion != null)
+                            {
+                                <span class="badge bg-success">Devuelto</span>
+                            }
+                            else if (p.EstaVencido)
+                            {
+                                <span class="badge bg-danger">Vencido</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Activo</span>
+                            }
+                        </td>
+                        @if (puedeGestionar)
+                        {
+                            <td class="text-center">
+                                @if (p.FechaDevolucion == null)
+                                {
+                                    <form asp-action="Devolver" asp-route-id="@p.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('¿Registrar la devolución de este equipo?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Registrar devolución</button>
+                                    </form>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No hay préstamos para mostrar.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
