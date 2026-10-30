@@ -1,0 +1,60 @@
+﻿@model LaboratorioMVC.Models.PrestamoCreateViewModel
+
+@{
+    ViewData["Title"] = "Nuevo préstamo";
+    var hoy = DateTime.Today.ToString("yyyy-MM-dd");
+    var maximo = DateTime.Today.AddDays(7).ToString("yyyy-MM-dd");
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Registrar préstamo</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="EquipoId" class="form-label"></label>
+                        <select asp-for="EquipoId" asp-items="Model.EquiposDisponibles" class="form-select">
+                            <option value="0">-- Seleccione un equipo disponible --</option>
+                        </select>
+                        <span asp-validation-for="EquipoId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UsuarioId" class="form-label"></label>
+                        <select asp-for="UsuarioId" asp-items="Model.Usuarios" class="form-select">
+                            <option value="0">-- Seleccione un usuario --</option>
+                        </select>
+                        <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FechaVencimiento" class="form-label"></label>
+                        <input asp-for="FechaVencimiento" type="date" class="form-control" min="@hoy" max="@maximo" />
+                        <div class="form-text">Máximo 7 días desde hoy.</div>
+                        <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Observaciones" class="form-label"></label>
+                        <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Observaciones" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

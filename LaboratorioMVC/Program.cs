@@ -1,28 +1,64 @@
+using LaboratorioMVC.Filters;
 using LaboratorioMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios de MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<SesionRequeridaFilter>();
+    options.Filters.Add<ApiExceptionFilter>();
+});
 
-// Obtener la URL base de la API
-string apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7126/";
+// Sesión para guardar token, rol y usuario
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-// Registro de los servicios HTTP tipados
-builder.Services.AddHttpClient<ICategoriaService, CategoriaService>(client =>
+// URL base de la API: siempre desde configuración
+string apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"]
+    ?? throw new InvalidOperationException("Falta ApiSettings:BaseUrl en appsettings.json");
+
+builder.Services.AddTransient<AuthTokenHandler>();
+builder.Services.AddTransient<ApiErrorHandler>();
+
+// El login no lleva token ni manejador de errores (maneja su propio 401)
+builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 });
+
+builder.Services.AddHttpClient<ICategoriaService, CategoriaService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<AuthTokenHandler>()
+.AddHttpMessageHandler<ApiErrorHandler>();
 
 builder.Services.AddHttpClient<IEquipoService, EquipoService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<AuthTokenHandler>()
+.AddHttpMessageHandler<ApiErrorHandler>();
 
 builder.Services.AddHttpClient<IReporteService, ReporteService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<AuthTokenHandler>()
+.AddHttpMessageHandler<ApiErrorHandler>();
+
+builder.Services.AddHttpClient<IPrestamoService, PrestamoService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<AuthTokenHandler>()
+.AddHttpMessageHandler<ApiErrorHandler>();
 
 var app = builder.Build();
 
@@ -34,9 +70,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

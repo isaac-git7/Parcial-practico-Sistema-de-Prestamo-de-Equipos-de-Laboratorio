@@ -2,11 +2,16 @@
 
 @{
     ViewData["Title"] = "Inventario de Equipos";
+    var esAdmin = Context.Session.GetString("Rol") == "Admin";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Inventario de Equipos de Laboratorio</h2>
-    <a asp-action="Create" class="btn btn-success">+ Nuevo Equipo</a>
+
+    @if (esAdmin)
+    {
+        <a asp-action="Create" class="btn btn-success">+ Nuevo Equipo</a>
+    }
 </div>
 
 <!-- Filtros combinados de búsqueda -->
@@ -55,7 +60,11 @@
             <th>Marca / Modelo</th>
             <th>Categoría</th>
             <th>Estado</th>
-            <th class="text-center" style="width: 170px;">Acciones</th>
+
+            @if (esAdmin)
+            {
+                <th class="text-center" style="width: 170px;">Acciones</th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -85,20 +94,23 @@
                                 break;
                         }
                     </td>
-                    <td class="text-center">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Editar</a>
-                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este equipo?');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                        </form>
-                    </td>
+                    @if (esAdmin)
+                    {
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Editar</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este equipo?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    }
                 </tr>
             }
         }
         else
         {
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">No se encontraron equipos que coincidan con los criterios.</td>
+                <td colspan="@(esAdmin ? 6 : 5)" class="text-center text-muted py-4"></td>
             </tr>
         }
     </tbody>
